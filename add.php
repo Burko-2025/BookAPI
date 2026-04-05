@@ -27,6 +27,7 @@ if (isset($postdata) && !empty($postdata)) {
     trim($request->data->pages) === '' ||
     trim($request->data->author) === '' ||
     trim($request->data->publisher) === ''
+
   ) {
 
     // Send HTTP status code 400 (Bad Request)
@@ -43,6 +44,23 @@ if (isset($postdata) && !empty($postdata)) {
   $pages = mysqli_real_escape_string($con, trim($request->data->pages));
   $author = mysqli_real_escape_string($con, trim($request->data->author));
   $publisher = mysqli_real_escape_string($con, trim($request->data->publisher));
+  $coverImage = mysqli_real_escape_string($con, trim($request->data->coverImage));
+
+    //extract the image name from the file path
+    $originalImageName = str_replace('\\', '/', $coverImage);
+    $new = basename($originalImageName);
+    if (empty($new)) {
+      $new = 'placeholder_100.jpg';
+    }
+
+    // allowed image formats
+    $allowedExt = ['png', 'jpg', 'jpeg', 'gif'];
+    $ext = strtolower(pathinfo($new, PATHINFO_EXTENSION));
+    if ($new != 'placeholder_100.jpg' && !in_array($ext, $allowedExt)) {
+      http_response_code(400);
+      echo json_encode(['message' => 'Invalid image format. Only PNG, JPG, JPEG, and GIF are allowed.']);
+      exit;
+    }
 
 
   // ================= DUPLICATE CHECK =================
@@ -69,8 +87,8 @@ if (isset($postdata) && !empty($postdata)) {
 
   // ================= INSERT BOOK =================
   // SQL query to insert the new book into the database
-  $sql = "INSERT INTO `books` (`bookID`, `title`, `author`, `publisher`, `pages`)
-          VALUES (NULL, '{$title}', '{$author}', '{$publisher}', '{$pages}')";
+  $sql = "INSERT INTO `books` (`bookID`, `title`, `author`, `publisher`, `pages`, `coverImage`)
+          VALUES (NULL, '{$title}', '{$author}', '{$publisher}', '{$pages}', '{$new}')";
 
 
   // Execute the SQL query
@@ -86,6 +104,7 @@ if (isset($postdata) && !empty($postdata)) {
       'author' => $author,
       'publisher' => $publisher,
       'pages' => $pages,
+      'coverImage' => $new,
       'message' => 'Book added successfully.'
     ]);
 

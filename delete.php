@@ -3,7 +3,7 @@
 
     $bookID = ($_GET['bookID']!=null && (int) $_GET['bookID'] > 0) ? mysqli_real_escape_string($con, (int)$_GET['bookID']) : false;
 
-    if (!$contactID) {
+    if (!$bookID) {
         return http_response_code(400);
     }
 

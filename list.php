@@ -15,7 +15,7 @@ $books = [];
 
 // ================= SQL QUERY =================
 // Select all books from the database
-$sql = "SELECT bookID, title, author, publisher, pages FROM books";
+$sql = "SELECT bookID, title, author, publisher, pages, coverImage FROM books";
 
 // Execute the SQL query
 if ($result = mysqli_query($con, $sql)) {
@@ -32,6 +32,7 @@ if ($result = mysqli_query($con, $sql)) {
         $books[$count]['author']   = $row['author'];
         $books[$count]['publisher']= $row['publisher'];
         $books[$count]['pages']    = $row['pages'];
+        $books[$count]['coverImage'] = $row['coverImage'];
 
         // Increment the counter for the next book
         $count++;
